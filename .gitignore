@@ -1,14 +1,8 @@
-# Dependencias
 node_modules/
-
-# Variables de entorno
+Backend/node_modules/
+Frontend/node_modules/
 .env
-.env.local
-
-# Logs
+Backend/.env
+Frontend/.env
+Frontend/dist/
 *.log
-npm-debug.log*
-
-# Sistema operativo
-.DS_Store
-Thumbs.db

@@ -147,3 +147,11 @@ INSERT INTO categorias (nombre, descripcion) VALUES
   ('General', 'Categoría por defecto'),
   ('Bebidas', 'Bebidas y refrescos'),
   ('Snacks',  'Botanas y golosinas');
+
+
+  -- ============================================
+-- USUARIO ADMINISTRADOR POR DEFECTO
+-- ============================================
+-- Contraseña: Admin123!
+INSERT INTO usuarios (nombre, email, password_hash, rol_id) VALUES
+  ('Admin Principal', 'admin@tienda.com', '$2a$10$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW', 1);

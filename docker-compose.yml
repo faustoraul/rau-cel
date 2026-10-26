@@ -1,0 +1,66 @@
+services:
+  # ---------------------------------------------
+  # Base de Datos (MySQL)
+  # ---------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: tienda_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tienda_db
+    ports:
+      - "3307:3306"  # <--- EL PUERTO AHORA ES 3307
+    volumes:
+      - ./Backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - mysql_data:/var/lib/mysql
+    networks:
+      - tienda_network
+
+  # ---------------------------------------------
+  # Backend (Node.js + Express)
+  # ---------------------------------------------
+  backend:
+    build: ./Backend
+    container_name: tienda_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_HOST=db 
+      - DB_PORT=3306  # El backend se conecta internamente por el 3306
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=tienda_db
+      - JWT_SECRET=super_secreto_para_produccion_123
+      - JWT_EXPIRES_IN=2h
+    depends_on:
+      - db
+    networks:
+      - tienda_network
+
+  # ---------------------------------------------
+  # Frontend (React compilado en Nginx)
+  # ---------------------------------------------
+  frontend:
+    build: 
+      context: ./Frontend
+      args:
+        - VITE_API_URL=http://localhost:3000/api
+    container_name: tienda_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tienda_network
+
+volumes:
+  mysql_data:
+
+networks:
+  tienda_network:
+    driver: bridge

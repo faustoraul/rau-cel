@@ -16,6 +16,7 @@ const categoriaRoutes = require('./routes/categoria.routes');
 const productoRoutes = require('./routes/producto.routes');
 const inventarioRoutes = require('./routes/inventario.routes'); 
 const ventaRoutes = require('./routes/venta.routes'); 
+const usuarioRoutes = require('./routes/usuario.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,10 +25,33 @@ const PORT = process.env.PORT || 3000;
 // Middlewares globales
 // --------------------------------------------
 app.use(helmet());                              // Cabeceras de seguridad
-app.use(cors());                                // Permitir peticiones del frontend
 app.use(morgan('dev'));                         // Registrar peticiones en consola
 app.use(express.json());                        // Parsear JSON del body
 app.use(express.urlencoded({ extended: true })); // Parsear formularios
+
+// --------------------------------------------
+// Configuración de CORS (Seguridad)
+// --------------------------------------------
+const allowedOrigins = [
+  'http://localhost',       // <-- Agrega esta
+  'http://127.0.0.1',       // <-- Agrega esta
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origin (como Postman o apps móviles)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado por CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // --------------------------------------------
 // Ruta de prueba (verifica que el servidor vive)
@@ -79,8 +103,8 @@ app.use('/api', testRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/inventario', inventarioRoutes);
-app.use('/api/ventas', ventaRoutes); 
-
+app.use('/api/ventas', ventaRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 // --------------------------------------------
 // Ruta raíz
@@ -107,21 +131,28 @@ app.use((req, res) => {
 // --------------------------------------------
 app.use((err, req, res, next) => {
   console.error('Error:', err.message);
+  
+  // En producción no mostramos detalles técnicos de la BD
+  const mensaje = process.env.NODE_ENV === 'production' 
+    ? 'Error interno del servidor' 
+    : err.message;
+
   res.status(500).json({
     ok: false,
-    message: 'Error interno del servidor'
+    message: mensaje
   });
 });
 
 // --------------------------------------------
 // Arrancar el servidor
 // --------------------------------------------
+// --------------------------------------------
+// Arrancar el servidor (Solo si no estamos en pruebas)
 app.listen(PORT, () => {
   console.log('');
   console.log('============================================');
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`🔎 Prueba el endpoint:  http://localhost:${PORT}/api/ping`);
-  console.log(`🔐 Auth:                http://localhost:${PORT}/api/auth/login`);
   console.log('============================================');
   console.log('');
 });
