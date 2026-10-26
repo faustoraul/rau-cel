@@ -220,5 +220,34 @@ async function activar(req, res, next) {
     next(error);
   }
 }
+/**
+ * DELETE /api/productos/:id/eliminar
+ * Eliminación permanente (Solo admin)
+ */
+async function eliminar(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ ok: false, message: 'ID inválido' });
+    }
 
-module.exports = { listar, obtenerPorId, crear, actualizar, desactivar, activar };
+    const ok = await productoModel.eliminar(id);
+    if (!ok) {
+      return res.status(404).json({ ok: false, message: 'Producto no encontrado' });
+    }
+    
+    res.json({ ok: true, message: 'Producto eliminado permanentemente' });
+  } catch (error) {
+    // Capturamos el error de MySQL si el producto tiene ventas asociadas
+    if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+      return res.status(400).json({ 
+        ok: false, 
+        message: 'No se puede eliminar: el producto tiene ventas o inventario asociado. Usa la opción Desactivar.' 
+      });
+    }
+    next(error);
+  }
+}
+
+
+module.exports = { listar, obtenerPorId, crear, actualizar, desactivar, activar, eliminar };

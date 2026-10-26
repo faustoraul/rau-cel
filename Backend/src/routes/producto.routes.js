@@ -16,5 +16,6 @@ router.post('/', verificarJWT, requireRole('administrador'), productoController.
 router.put('/:id', verificarJWT, requireRole('administrador'), productoController.actualizar);
 router.delete('/:id', verificarJWT, requireRole('administrador'), productoController.desactivar);
 router.patch('/:id/activar', verificarJWT, requireRole('administrador'), productoController.activar);
+router.delete('/:id/eliminar', verificarJWT, requireRole('administrador'), productoController.eliminar);
 
 module.exports = router;

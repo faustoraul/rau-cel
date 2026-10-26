@@ -154,4 +154,4 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 -- ============================================
 -- Contraseña: Admin123!
 INSERT INTO usuarios (nombre, email, password_hash, rol_id) VALUES
-  ('Admin Principal', 'admin@tienda.com', '$2a$10$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW', 1);
+  ('Admin Principal', 'admin@tienda.com', '$2b$10$XOtPgkaB5Q/5HTbGetgKA.aMFA0rhZYqC7m9nvX5rR6ednlxaLB5e', 1);

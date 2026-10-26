@@ -183,6 +183,15 @@ async function activar(id) {
   return result.affectedRows > 0;
 }
 
+/**
+ * Elimina permanentemente un producto (Solo funciona si no tiene ventas/inventario)
+ */
+async function eliminar(id) {
+  const pool = await getPool();
+  const [result] = await pool.query('DELETE FROM productos WHERE id = ?', [id]);
+  return result.affectedRows > 0;
+}
+
 module.exports = {
   listar,
   obtenerPorId,
@@ -193,3 +202,4 @@ module.exports = {
   desactivar,
   activar
 };
+ 

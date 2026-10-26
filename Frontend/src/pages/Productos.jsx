@@ -104,6 +104,22 @@ function Productos() {
   }
 
   async function toggleActivo(prod) {
+
+  async function eliminarProducto(prod) {
+    // 1. Pedimos confirmación al usuario
+    const confirmar = window.confirm(`¿Estás SEGURO de eliminar permanentemente el producto "${prod.nombre}"?\n\nEsta acción no se puede deshacer.`);
+    if (!confirmar) return;
+
+    try {
+      // 2. Llamamos a nuestro nuevo endpoint
+      await api.delete(`/productos/${prod.id}/eliminar`);
+      setExito('Producto eliminado permanentemente');
+      cargarProductos(); // Recargamos la tabla
+    } catch (err) {
+      // 3. Mostramos el error si tiene ventas asociadas
+      setError(err.response?.data?.message || 'Error al eliminar el producto');
+    }
+  }
     try {
       if (prod.activo === 1) {
         await api.delete(`/productos/${prod.id}`);
@@ -214,6 +230,13 @@ function Productos() {
                         <td className="text-end">
                           <button className="btn btn-sm btn-outline-primary me-1" onClick={() => abrirEditar(prod)}>
                             ✏️
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-dark ms-1"
+                            onClick={() => eliminarProducto(prod)}
+                            title="Eliminar permanentemente"
+                          >
+                            🗑️
                           </button>
                           <button
                             className={`btn btn-sm ${prod.activo === 1 ? 'btn-outline-danger' : 'btn-outline-success'}`}
